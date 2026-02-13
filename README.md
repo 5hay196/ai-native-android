@@ -1,249 +1,324 @@
-# 🤖 AI-Native Android ROM
+# AI-Native Android ROM
 
-**The world's first Android ROM with deep LLM integration using Ollama**
+**An open-source Android distribution with native LLM integration for intelligent system optimization**
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Based on LineageOS](https://img.shields.io/badge/Based%20on-LineageOS%2021-green)](https://lineageos.org/)
-[![Android](https://img.shields.io/badge/Android-14-brightgreen)](https://www.android.com/)
-
-> An Android ROM that thinks for you. Built on LineageOS with native Ollama integration for intelligent battery optimization, predictive app management, and a privacy-first AI assistant.
-
----
-
-## 🌟 Why This Project?
-
-Modern mobile operating systems are reactive, not proactive. We're building an **AI-native OS** where intelligence is baked into the kernel and system services, not just apps.
-
-### The Problem
-- ❌ Android's battery management is rule-based and reactive
-- ❌ App predictions are basic pattern matching
-- ❌ AI assistants require cloud services (privacy nightmare)
-- ❌ No deep OS-level optimization using modern LLMs
-
-### Our Solution
-- ✅ **20-30% better battery life** through AI prediction
-- ✅ **100% on-device processing** - your data never leaves your phone
-- ✅ **Self-optimizing OS** that learns your usage patterns
-- ✅ **Simpler than kernel development** - userspace first, proven APIs
+[![Android 14](https://img.shields.io/badge/Android-14-brightgreen)](https://www.android.com/)
+[![Status: Alpha](https://img.shields.io/badge/Status-Alpha-yellow)](https://github.com/5hay196/ai-native-android)
 
 ---
 
-## 🚀 Key Features
+## Project Overview
 
-### 1. 🔋 Intelligent Battery Optimization
-- **Predictive Doze**: AI predicts which apps you'll use in the next hour
-- **Smart Background Control**: Aggressive power saving for unused apps
-- **Learned Patterns**: Adapts to your daily routines
-- **Result**: 20-30% longer battery life vs stock Android
+AI-Native Android is a custom Android ROM built on LineageOS 21 that integrates Ollama (llama.cpp) at the system level to provide intelligent, privacy-preserving optimization across the entire operating system. Unlike traditional Android distributions that rely on cloud-based AI services, this project runs all machine learning inference locally on-device.
 
-### 2. 📱 AI App Manager
-- **Smart Launcher**: Predicts your next app with 80%+ accuracy
-- **Auto Organization**: Dynamic folders based on context (work/home/travel)
-- **Bloatware Detection**: Identifies and suggests removal of unused apps
-- **Permission Guardian**: AI reviews and recommends permission changes
+### Design Philosophy
 
-### 3. 🎙️ Privacy-First AI Assistant
-- **Wake Word**: "Hey Phone" (offline detection)
-- **100% On-Device**: Whisper.cpp for speech, Ollama for intelligence
-- **No Cloud**: Zero data sent to Google, Amazon, or any third party
-- **Capabilities**: System control, app launching, information queries
-
-### 4. 🔔 Smart Notifications
-- **Priority Prediction**: AI scores notification importance (0-10)
-- **Context-Aware Bundling**: Groups related notifications intelligently  
-- **Response Suggestions**: Better than Google's Smart Reply
-- **Auto-DND**: Learns when you're busy and silences appropriately
+- **Privacy-First**: Zero data transmission to external servers
+- **System-Native**: LLM integration at framework level, not just apps
+- **Adaptive Intelligence**: Learns and optimizes based on usage patterns
+- **Open Source**: Fully auditable, community-driven development
+- **Production-Ready**: Focus on stability, battery life, and performance
 
 ---
 
-## 📋 Development Roadmap
+## Core Capabilities
 
-### Phase 1: Foundation (Weeks 1-4) ✅
-- [x] GitHub repository setup
-- [x] Project documentation
-- [ ] Dev environment configuration (Cursor IDE + Claude Sonnet 4)
-- [ ] LineageOS 21 base build
+### Intelligent Power Management
+Predictive battery optimization using machine learning to forecast app usage patterns and proactively manage background processes, targeting 20-30% improvement in battery life compared to stock Android.
+
+### Contextual Application Management
+AI-driven app launcher with predictive suggestions, automatic categorization, and permission auditing to streamline user workflows and enhance security.
+
+### Privacy-Preserving Voice Assistant
+Fully offline voice interaction system using Whisper.cpp for speech recognition and Ollama for natural language understanding, providing Google Assistant-like functionality without cloud dependencies.
+
+### Smart Notification System
+ML-based notification priority scoring, intelligent grouping, and context-aware delivery to reduce interruptions while ensuring critical alerts are never missed.
+
+---
+
+## Technical Architecture
+
+### System Components
+
+```
+┌─────────────────────────────────────────┐
+│     Application Layer (Java/Kotlin)     │
+│  - AI Settings Manager                  │
+│  - Smart Launcher                       │
+│  - Voice Assistant UI                   │
+└──────────────┬──────────────────────────┘
+               │ Android Binder IPC
+┌──────────────▼──────────────────────────┐
+│   System Services (frameworks/base)     │
+│  - AINativeService                      │
+│  - BatteryPredictionService             │
+│  - NotificationIntelligenceService      │
+└──────────────┬──────────────────────────┘
+               │ Unix Domain Socket
+┌──────────────▼──────────────────────────┐
+│      Ollama Daemon (Native C++)         │
+│  - llama.cpp inference engine           │
+│  - Model lifecycle management           │
+│  - Memory-mapped GGUF loading           │
+└─────────────────────────────────────────┘
+```
+
+### Technology Stack
+
+| Component | Implementation |
+|-----------|----------------|
+| Base OS | LineageOS 21.0 (AOSP Android 14) |
+| LLM Runtime | Ollama (llama.cpp backend) |
+| System Language | Java, Kotlin, C++ |
+| Inference Models | Qwen2.5-Coder (7B), Llama 3.2 (3B) |
+| STT Engine | Whisper.cpp |
+| TTS Engine | Piper TTS |
+| Build System | AOSP build/soong + Make |
+
+---
+
+## Project Lifecycle
+
+### Phase 1: Foundation (Alpha)
+**Status**: In Progress
+
+- [ ] Repository infrastructure and documentation
+- [ ] LineageOS 21 base system compilation
 - [ ] Ollama system service integration
+- [ ] Basic ML inference API framework
+- [ ] Development environment configuration
 
-### Phase 2: Core AI Features (Weeks 5-10)
-- [ ] Battery prediction service
-- [ ] Smart app manager
-- [ ] AI assistant framework (Whisper + Ollama)
-- [ ] Notification intelligence
+**Deliverable**: Bootable ROM with Ollama daemon running
 
-### Phase 3: Testing & Optimization (Weeks 11-14)
-- [ ] Test on Pixel 4a (reference device)
-- [ ] Test on Xiaomi Poco F3 (Snapdragon 870)
-- [ ] Test on OnePlus Nord N200 (budget device)
-- [ ] Battery benchmarks vs stock ROM
-- [ ] Performance tuning
+### Phase 2: Core Features (Beta)
+**Status**: Planned
 
-### Phase 4: Release (Weeks 15-16)
-- [ ] Recovery flashable ZIP
-- [ ] OTA update system
-- [ ] Community beta testing
-- [ ] XDA Developers thread
+- [ ] Battery prediction service implementation
+- [ ] App usage pattern learning
+- [ ] Notification priority ML model
+- [ ] Voice assistant framework (STT/TTS/NLU)
+- [ ] System settings integration
 
-**Timeline**: 16 weeks (4 months) to v1.0
+**Deliverable**: Feature-complete ROM with all AI services functional
+
+### Phase 3: Optimization & Testing (RC)
+**Status**: Planned
+
+- [ ] Multi-device compatibility testing
+- [ ] Performance benchmarking and tuning
+- [ ] Battery life validation
+- [ ] Security audit and hardening
+- [ ] Documentation and user guides
+
+**Deliverable**: Release candidate with documented performance metrics
+
+### Phase 4: Stable Release (v1.0)
+**Status**: Planned
+
+- [ ] OTA update mechanism
+- [ ] Recovery flashable distribution
+- [ ] Community support infrastructure
+- [ ] Public release and announcement
+
+**Deliverable**: Production-ready v1.0 release
 
 ---
 
-## 🛠️ Tech Stack
-
-| Component | Technology |
-|-----------|------------|
-| **Base ROM** | LineageOS 21.0 (Android 14) |
-| **LLM Runtime** | Ollama (llama.cpp backend) |
-| **Models** | Qwen2.5-Coder 7B (system), Llama 3.2 (assistant) |
-| **Speech-to-Text** | Whisper.cpp (on-device) |
-| **Text-to-Speech** | Piper TTS (offline) |
-| **Build System** | AOSP build tools + Kbuild |
-| **AI Coding** | Cursor IDE + Claude Sonnet 4 + GitHub Copilot |
-
----
-
-## 💻 Development Setup
+## Development Setup
 
 ### Prerequisites
-- Ubuntu 22.04 LTS (or similar Linux)
-- 300GB free disk space
-- 16GB+ RAM
-- Fast internet for initial sync
 
-### Quick Start
+- Linux development environment (Ubuntu 22.04 LTS recommended)
+- 300GB available storage
+- 16GB+ RAM
+- Python 3.8+, Java 11, Git
+
+### Build Environment Setup
 
 ```bash
-# 1. Install dependencies
-sudo apt install bc bison build-essential ccache curl flex \
-                 g++-multilib gcc-multilib git gnupg gperf \
-                 imagemagick lib32ncurses5-dev libelf-dev \
-                 libssl-dev libxml2 lzop rsync schedtool \
-                 squashfs-tools xsltproc zip zlib1g-dev \
-                 openjdk-11-jdk python3 adb fastboot
+# Install AOSP build dependencies
+sudo apt-get install bc bison build-essential ccache curl flex \
+  g++-multilib gcc-multilib git gnupg gperf imagemagick \
+  lib32ncurses5-dev lib32readline-dev lib32z1-dev libelf-dev \
+  liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev \
+  libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool \
+  squashfs-tools xsltproc zip zlib1g-dev openjdk-11-jdk python3
 
-# 2. Set up repo tool
+# Configure repo tool
 mkdir -p ~/bin
 curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
 chmod a+x ~/bin/repo
 export PATH=~/bin:$PATH
 
-# 3. Initialize LineageOS
-mkdir -p ~/android/ai-native-android
-cd ~/android/ai-native-android
-repo init -u https://github.com/LineageOS/android.git -b lineage-21.0
-repo sync -c -j$(nproc --all)
-
-# 4. Install Ollama
-curl -fsSL https://ollama.com/install.sh | sh
-ollama pull qwen2.5-coder:7b
-
-# 5. Install Cursor IDE for AI-assisted development
-curl -fsSL https://cursor.sh/install.sh | sh
+# Initialize LineageOS source tree
+mkdir -p ~/android/ai-native
+cd ~/android/ai-native
+repo init -u https://github.com/LineageOS/android.git -b lineage-21.0 --git-lfs
+repo sync -c -j$(nproc --all) --no-clone-bundle --no-tags
 ```
 
-### Building
+### Ollama Integration
 
 ```bash
-# Build for your device (example: Pixel 4a = sunfish)
-source build/envsetup.sh
-breakfast sunfish
-brunch sunfish
+# Install Ollama for host development
+curl -fsSL https://ollama.com/install.sh | sh
 
-# Output: out/target/product/sunfish/lineage-*.zip
+# Pull required models
+ollama pull qwen2.5-coder:7b
+ollama pull llama3.2:3b
+```
+
+### Building the ROM
+
+```bash
+# Set up build environment
+source build/envsetup.sh
+
+# Select device target (example: Pixel 4a = sunfish)
+breakfast <device-codename>
+
+# Start compilation
+brunch <device-codename>
+
+# Output location: out/target/product/<device>/lineage-*.zip
 ```
 
 ---
 
-## 🎯 Why Android ROM Instead of Linux Kernel?
+## Supported Devices
 
-| Factor | Linux Kernel | Android ROM |
-|--------|--------------|-------------|
-| **Development Time** | 40 weeks | 12-16 weeks |
-| **Testing** | QEMU, bare metal | Any Android phone |
-| **User Base** | Servers/desktops | 3+ billion devices |
-| **Safety** | Kernel panics critical | Userspace recoverable |
-| **Monetization** | Enterprise only | Consumer + B2B |
+### Current Status
 
-**Decision**: Android ROM is faster to market, easier to test, and reaches more users.
+| Device | Codename | Architecture | Status |
+|--------|----------|--------------|--------|
+| Google Pixel 4a | sunfish | ARM64 | Primary Target |
+| Xiaomi Poco F3 | alioth | ARM64 | Planned |
+| OnePlus Nord N200 | dre | ARM64 | Planned |
 
----
-
-## 🇮🇪 Irish Innovation
-
-Developed in **Dublin, Ireland** by QuinnIT - bringing AI-native mobile OS technology to the EU market.
-
-### Business Opportunities
-- 🏢 **Enterprise**: Custom ROMs for ISO 27001 compliant organizations
-- 💰 **SaaS**: AI optimization subscriptions (€5-10/month)
-- 📱 **Hardware**: Pre-flashed devices with premium support
-- 🎓 **Grants**: Enterprise Ireland innovation funding eligible
+**Device Requests**: Community contributions welcome via Issues
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-This project is in active development. Contributions welcome!
+### How to Contribute
 
-### Areas We Need Help
-- Android system service development (Java/Kotlin)
-- eBPF/kernel optimization
-- Machine learning model optimization
-- Battery benchmarking
-- Device-specific testing
-- Documentation
+Contributions are welcome across all areas of the project:
 
-### Getting Started
-1. Fork this repo
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- **System Development**: Android services, HAL integration, eBPF optimization
+- **Machine Learning**: Model optimization, inference performance, accuracy tuning
+- **Device Support**: Porting to additional hardware platforms
+- **Testing**: Battery benchmarks, performance analysis, stability testing
+- **Documentation**: User guides, API documentation, tutorials
 
----
+### Contribution Workflow
 
-## 📱 Supported Devices (Planned)
+1. Fork the repository
+2. Create a feature branch from `main`
+3. Implement changes following AOSP coding style
+4. Test on physical hardware when possible
+5. Submit pull request with detailed description
+6. Address review feedback
 
-| Device | Codename | Status |
-|--------|----------|--------|
-| Google Pixel 4a | sunfish | 🎯 Primary Target |
-| Xiaomi Poco F3 | alioth | 🔄 In Progress |
-| OnePlus Nord N200 | dre | 📋 Planned |
-| More devices | TBD | 🤔 Community requests |
+### Code Standards
+
+- Follow [AOSP Java Code Style](https://source.android.com/docs/setup/contribute/code-style)
+- Use `checkpatch.pl` for C/C++ code
+- Include unit tests for new services
+- Document public APIs with Javadoc/Doxygen
 
 ---
 
-## 📄 License
+## Performance Targets
 
-GPL-3.0 License - same as LineageOS. See [LICENSE](LICENSE) for details.
+### Battery Life
+- **Goal**: 20-30% improvement over stock Android
+- **Measurement**: PCMark Battery Life benchmark
+- **Baseline**: LineageOS 21 without AI features
+
+### System Responsiveness
+- **Goal**: <5% overhead vs baseline ROM
+- **Measurement**: Geekbench, AnTuTu
+- **Constraint**: AI inference on efficiency cores only
+
+### Prediction Accuracy
+- **App Launch**: >80% accuracy for next-app prediction
+- **Battery**: <10% error in remaining time estimation
+- **Notifications**: >90% agreement with user priority
 
 ---
 
-## ⚠️ Disclaimer
+## Security & Privacy
 
-This is experimental software. Use at your own risk. Always backup your data before flashing custom ROMs.
+### Threat Model
+
+- **Assumption**: On-device ML models are trusted
+- **Guarantee**: Zero network transmission of user data for AI features
+- **Audit**: All inference code is open source and reviewable
+
+### Privacy Guarantees
+
+1. **No Cloud Dependencies**: All AI processing occurs locally
+2. **Data Minimization**: Only necessary sensor data collected
+3. **User Control**: AI features can be fully disabled
+4. **Transparency**: Inference logs available for inspection
+
+### Security Hardening
+
+- SELinux policies for Ollama daemon isolation
+- Memory-safe Rust components where applicable
+- Regular security updates from LineageOS upstream
+- Verified boot support (where hardware permits)
 
 ---
 
-## 🔗 Links
+## License
 
-- **Website**: Coming soon
-- **Documentation**: [Wiki](https://github.com/5hay196/ai-native-android/wiki)
-- **Issues**: [GitHub Issues](https://github.com/5hay196/ai-native-android/issues)
+This project is licensed under **GPL-3.0** to maintain compatibility with LineageOS and the Linux kernel.
+
+See [LICENSE](LICENSE) for full details.
+
+### Third-Party Components
+
+- **LineageOS**: Apache 2.0 / GPL-3.0 (various components)
+- **Ollama**: MIT License
+- **llama.cpp**: MIT License
+- **Whisper.cpp**: MIT License
+
+---
+
+## Project Status
+
+**Current Phase**: Alpha (Foundation)
+
+**Latest Update**: 2026-02-13
+
+**Next Milestone**: Bootable LineageOS 21 with Ollama integration
+
+---
+
+## Resources
+
+- **Documentation**: [GitHub Wiki](https://github.com/5hay196/ai-native-android/wiki)
+- **Issue Tracker**: [GitHub Issues](https://github.com/5hay196/ai-native-android/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/5hay196/ai-native-android/discussions)
+- **LineageOS Docs**: [LineageOS Wiki](https://wiki.lineageos.org/)
+- **Ollama Project**: [ollama.ai](https://ollama.ai)
 
 ---
 
-## 💡 Inspiration
+## Acknowledgments
 
-Built with insights from:
-- **SchedCP**: LLM-based Linux scheduler optimization (1.79× performance)
-- **KEN**: Kernel Extensions using Natural Language
-- **KernelGPT**: LLM-enhanced kernel fuzzing
-- **GrapheneOS**: Privacy-focused Android
-- **LineageOS**: The foundation we build upon
+This project builds upon the work of:
+
+- The LineageOS team for maintaining AOSP-based Android
+- Ollama contributors for local LLM runtime
+- Georgi Gerganov (ggerganov) for llama.cpp
+- The broader Android custom ROM community
 
 ---
 
-**Star ⭐ this repo if you believe in AI-native operating systems!**
-
-Made with ❤️ in Dublin, Ireland
+**Star this repository to follow development progress**
