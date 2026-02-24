@@ -1,0 +1,35 @@
+# sepolicy/file_contexts
+# SELinux file contexts for AI-Native Android ROM
+#
+# Merge with device sepolicy:
+#   BOARD_SEPOLICY_DIRS += $(LOCAL_PATH)/sepolicy
+#
+# After modifying, rebuild policy and push:
+#   make -j$(nproc) sepolicy
+#   adb push out/.../system/etc/selinux/ /system/etc/selinux/
+#   adb reboot
+
+##############################################################################
+# System binary
+##############################################################################
+# /system/bin/ollama -> ollama_exec domain
+/system/bin/ollama                  u:object_r:ollama_exec:s0
+
+##############################################################################
+# Data directories (on /data partition)
+##############################################################################
+# /data/ollama/              -> ollama_data_file
+/data/ollama(/.*)?           u:object_r:ollama_data_file:s0
+
+##############################################################################
+# Unix domain socket
+##############################################################################
+# /dev/socket/ollama/ollama.sock
+/dev/socket/ollama(/.*)?     u:object_r:ollama_socket:s0
+
+##############################################################################
+# Shared libraries
+##############################################################################
+# /system/lib64/libllama.so, libggml*.so
+/system/lib64/libllama\.so   u:object_r:system_lib_file:s0
+/system/lib64/libggml.*\.so  u:object_r:system_lib_file:s0
