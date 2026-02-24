@@ -1,0 +1,110 @@
+# sepolicy/ollama.te
+# SELinux Type Enforcement policy for the Ollama LLM daemon
+# Part of the AI-Native Android ROM project
+#
+# Drop-in location: device/<vendor>/<device>/sepolicy/ollama.te
+# (or system/sepolicy/private/ollama.te for AOSP core policy)
+#
+# Build instructions:
+#   BOARD_SEPOLICY_DIRS += $(LOCAL_PATH)/sepolicy
+# in your device BoardConfig.mk
+
+# ---------------------------------------------------------------------------
+# Type declarations
+# ---------------------------------------------------------------------------
+
+# The Ollama daemon process type
+type ollama, domain;
+type ollama_exec, exec_type, file_type, system_file_type;
+
+# Ollama data directory on /data
+type ollama_data_file, file_type, data_file_type;
+
+# Unix domain socket in /dev/socket/ollama
+type ollama_socket, file_type;
+
+# ---------------------------------------------------------------------------
+# Domain transition: init starts ollama
+# ---------------------------------------------------------------------------
+init_daemon_domain(ollama)
+
+# ---------------------------------------------------------------------------
+# Self permissions
+# ---------------------------------------------------------------------------
+allow ollama ollama:process { fork sigchld sigkill sigstop signull signal };
+allow ollama ollama:fd use;
+allow ollama ollama:fifo_file rw_file_perms;
+
+# Allow mmap with execute for llama.cpp JIT-compiled kernels
+allow ollama ollama:process execmem;
+allow ollama self:process execmem;
+
+# ---------------------------------------------------------------------------
+# Executable
+# ---------------------------------------------------------------------------
+allow ollama ollama_exec:file { read getattr execute entrypoint };
+
+# Shared libraries (libllama.so, libggml.so)
+allow ollama system_file:file { read getattr execute open };
+allow ollama system_lib_file:file { read getattr execute open };
+
+# ---------------------------------------------------------------------------
+# Filesystem access
+# ---------------------------------------------------------------------------
+
+# /data/ollama - models and logs
+allow ollama ollama_data_file:dir { create_dir_perms relabelto };
+allow ollama ollama_data_file:file { create rw_file_perms relabelto };
+
+# /proc - for CPU feature detection (NEON, SVE, etc.)
+allow ollama proc_cpuinfo:file r_file_perms;
+allow ollama proc_meminfo:file r_file_perms;
+
+# /dev/urandom - for cryptographic randomness in Go runtime
+allow ollama urandom_device:chr_file rw_file_perms;
+
+# /sys/devices/system/cpu - core topology for thread pinning
+allow ollama sysfs_devices_system_cpu:file r_file_perms;
+allow ollama sysfs_devices_system_cpu:dir r_dir_perms;
+
+# ---------------------------------------------------------------------------
+# Unix domain socket (IPC with AINativeService)
+# ---------------------------------------------------------------------------
+allow ollama ollama_socket:sock_file { create setattr unlink };
+allow ollama ollama_socket:unix_stream_socket { create bind listen accept };
+
+# AINativeService (system_server) connects to Ollama's socket
+allow system_server ollama_socket:sock_file write;
+allow system_server ollama_socket:unix_stream_socket connectto;
+
+# ---------------------------------------------------------------------------
+# Localhost TCP (127.0.0.1:11434) - optional HTTP API fallback
+# ---------------------------------------------------------------------------
+allow ollama self:tcp_socket { create bind listen accept read write };
+allow ollama port:tcp_socket name_bind;
+# Restrict to loopback only - no external interfaces
+neverallow ollama { port -ollama_port }:tcp_socket name_bind;
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+allow ollama log_device:chr_file rw_file_perms;
+allow ollama kmsg_device:chr_file rw_file_perms;
+
+# ---------------------------------------------------------------------------
+# Property access
+# ---------------------------------------------------------------------------
+# Read our own enable/disable property
+get_prop(ollama, persist_ai_native_prop)
+set_prop(ollama, persist_ai_native_prop)
+
+# ---------------------------------------------------------------------------
+# Denials to enforce privacy guarantees
+# ---------------------------------------------------------------------------
+# Ollama must NOT access the network (except loopback defined above)
+neverallow ollama { domain -ollama }:udp_socket *;
+neverallow ollama { netif_type -lo }:netif *;
+# Ollama must NOT access contacts, SMS, or media content providers
+neverallow ollama { content_provider_type }:binder *;
+# Ollama must NOT ptrace any other process
+neverallow ollama { domain -ollama }:process ptrace;
