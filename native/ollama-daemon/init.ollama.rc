@@ -1,0 +1,87 @@
+# init.ollama.rc
+# Android init language service definition for the Ollama LLM daemon
+# Included by device init via:
+#   import /system/etc/init/init.ollama.rc
+#
+# Ollama runs as the "ollama" system user (UID/GID defined in android_filesystem_config.h)
+# All inference happens locally - zero network egress for AI features.
+
+# ---------------------------------------------------------------------------
+# Filesystem setup - runs once at first boot (post-fs-data)
+# ---------------------------------------------------------------------------
+on post-fs-data
+    # Create Ollama data directory on userdata partition
+    mkdir /data/ollama 0770 ollama ollama
+    mkdir /data/ollama/models 0770 ollama ollama
+    mkdir /data/ollama/logs 0770 ollama ollama
+
+    # Create Unix domain socket directory for IPC with AINativeService
+    mkdir /dev/socket/ollama 0770 ollama system
+
+    # Restore SELinux context for data directories
+    restorecon_recursive /data/ollama
+
+# ---------------------------------------------------------------------------
+# Ollama server daemon
+# ---------------------------------------------------------------------------
+service ollama /system/bin/ollama serve
+    class late_start
+    user ollama
+    group ollama system inet
+    # SELinux domain - defined in sepolicy/ollama.te
+    seclabel u:r:ollama:s0
+
+    # Environment variables
+    # OLLAMA_HOST: listen on Unix socket only (no TCP outside loopback)
+    setenv OLLAMA_HOST 127.0.0.1:11434
+    setenv OLLAMA_MODELS /data/ollama/models
+    setenv OLLAMA_LOGS /data/ollama/logs
+    # Limit parallelism to avoid starving foreground apps
+    setenv OLLAMA_NUM_PARALLEL 1
+    # Use at most 4 CPU threads during inference
+    setenv OLLAMA_NUM_THREADS 4
+    # Keep models loaded for 5 minutes before unloading
+    setenv OLLAMA_KEEP_ALIVE 5m
+    # Run only on efficiency cores (cpuset defined below)
+    setenv OLLAMA_SCHED_YIELD 1
+
+    # Capabilities - none needed beyond default
+    capabilities
+
+    # Restart policy
+    # Restart after 10 s on crash; give up after 4 rapid crashes
+    oneshot_restart
+    restart_period 10
+
+    # IO scheduling - background class so foreground apps aren't affected
+    ioprio be 7
+
+    # CPU scheduling - SCHED_BATCH, lowest priority
+    priority 19
+
+    # Write PID to file so AINativeService can check liveness
+    writepid /dev/cpuset/background/tasks /proc/self/fd/0
+
+    # Disable by default; AINativeService starts it when first inference requested
+    disabled
+
+# ---------------------------------------------------------------------------
+# Property triggers - allow runtime enable/disable via Settings
+# ---------------------------------------------------------------------------
+on property:persist.ai_native.ollama.enabled=1
+    start ollama
+
+on property:persist.ai_native.ollama.enabled=0
+    stop ollama
+
+# Start after boot if user had it enabled before reboot
+on property:sys.boot_completed=1
+    exec_start ollama_boot_check
+
+service ollama_boot_check /system/bin/sh -c \
+    "if getprop persist.ai_native.ollama.enabled | grep -q 1; then start ollama; fi"
+    class main
+    user root
+    group root
+    oneshot
+    disabled
