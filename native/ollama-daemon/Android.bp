@@ -1,0 +1,81 @@
+// Copyright (C) 2026 AI-Native Android Project
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
+// Android.bp - Soong build rules for the Ollama native daemon
+// Placed at: native/ollama-daemon/Android.bp
+//
+// This module installs a prebuilt ollama binary (cross-compiled from source
+// via scripts/build_ollama_android.sh) as a system service binary.
+// The binary is started by init via init.ollama.rc.
+
+// ----------------------------------------------------------------
+// Prebuilt binary: the ollama server compiled for arm64-v8a
+// ----------------------------------------------------------------
+cc_prebuilt_binary {
+    name: "ollama",
+    srcs: ["prebuilt/arm64/ollama"],
+    arch: {
+        arm64: {
+            srcs: ["prebuilt/arm64/ollama"],
+        },
+    },
+    compile_multilib: "64",
+    init_rc: ["init.ollama.rc"],
+    // Install into /system/bin/
+    vendor: false,
+    system_ext_specific: false,
+    // Allow execution by system and ai_native gids
+    strip: {
+        none: true,
+    },
+    required: [
+        "ollama_data_dir",
+    ],
+}
+
+// ----------------------------------------------------------------
+// Create /data/ollama directory at first boot
+// ----------------------------------------------------------------
+install_symlink {
+    name: "ollama_data_dir",
+    // Handled via init.rc mkdir directive - placeholder target
+    installed_location: "system/etc/ollama/.keep",
+    from: "/dev/null",
+}
+
+// ----------------------------------------------------------------
+// Prebuilt llama.cpp runner libraries needed by Ollama
+// ----------------------------------------------------------------
+cc_prebuilt_library_shared {
+    name: "libollama_runner",
+    srcs: ["prebuilt/arm64/libllama.so"],
+    arch: {
+        arm64: {
+            srcs: ["prebuilt/arm64/libllama.so"],
+        },
+    },
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    // Installed to /system/lib64/
+    vendor: false,
+}
+
+// ----------------------------------------------------------------
+// GGUF model validation helper (optional standalone tool)
+// ----------------------------------------------------------------
+cc_prebuilt_binary {
+    name: "ollama_model_check",
+    srcs: ["prebuilt/arm64/llama-gguf-split"],
+    arch: {
+        arm64: {
+            srcs: ["prebuilt/arm64/llama-gguf-split"],
+        },
+    },
+    compile_multilib: "64",
+    strip: {
+        none: true,
+    },
+    optional: true,
+}
